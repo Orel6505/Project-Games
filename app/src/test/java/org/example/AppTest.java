@@ -6,9 +6,19 @@ package org.example;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Assertions;
+
 class AppTest {
-    @Test void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+    @Test
+    void randomPlayerTest() {
+        Assertions.assertDoesNotThrow(() -> {
+            //execute code that you expect not to throw Exceptions.
+            Player p1 = new RandomPlayer("User A");
+            Player p2 = new RandomPlayer("User B");
+            Game game = new RockPaperScissors(p1, p2);
+            game.play(10);
+            System.out.println(p1.getName()+" got "+p1.getScore()+ " and "
+                +p2.getName()+" got "+p2.getScore());
+        });
     }
 }
