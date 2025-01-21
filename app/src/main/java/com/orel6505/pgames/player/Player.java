@@ -11,8 +11,6 @@ public abstract class Player implements Actionable, Scorable {
         this.name = name;
         this.score = 0;
     }
-    
-    public abstract Action selectAction(Action[] actions);
 
     public Boolean isWinner(Scorable p){
         return (this.score > p.getScore());
