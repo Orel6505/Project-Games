@@ -17,6 +17,8 @@ public class RockPaperScissors extends Game {
         for (int i = 0; i < turnCount; i++){
             Action a1 = p1.selectAction(actions);
             Action a2 = p2.selectAction(actions);
+            System.out.println(p1.getName() + " selected " + a1.getName());
+            System.out.println(p2.getName() + " selected " + a2.getName());
             judge(a1, a2);
         }
     }
