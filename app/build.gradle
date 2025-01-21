@@ -21,6 +21,10 @@ dependencies {
     implementation libs.guava
 }
 
+run {
+    standardInput = System.in
+}
+
 testing {
     suites {
         // Configure the built-in test suite
