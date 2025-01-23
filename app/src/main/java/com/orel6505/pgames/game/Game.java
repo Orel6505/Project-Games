@@ -1,36 +1,41 @@
 package com.orel6505.pgames.game;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import com.orel6505.pgames.action.Action;
 import com.orel6505.pgames.player.Player;
 
 public abstract class Game {
-    Player p1;
-    Player p2;
+    List<Player> players;
     String name;
+    int maxPlayers;
     Action[] actions;
 
-    protected Game(Player p1, Player p2, String name){
-        this.p1 = p1;
-        this.p2 = p2;
+    protected Game(String name, int maxPlayers){
+        this.players = new ArrayList<>();
         this.name = name;
+        this.maxPlayers = maxPlayers;
     }
 
     public abstract void play(Integer turnCount);
-    public abstract void judge(Action a1, Action a2);
+    protected abstract void judge(Player p1, Player p2);
+
+    protected void addPlayer(Player p){
+        if(this.players.size() < maxPlayers){
+            this.players.add(p);
+        }
+    }
 
     public String getName() {
         return name;
     }
 
-    public Player getWinner(){
+    public Player getWinner(Player p1, Player p2){
         return p1.isWinner(p2) ? p1 : p2;
     }
 
-    public Player getPlayerOne() {
-        return p1;
-    }
-
-    public Player getPlayerTwo() {
-        return p2;
+    public List<Player> getPlayers() {
+        return this.players;
     }
 }
