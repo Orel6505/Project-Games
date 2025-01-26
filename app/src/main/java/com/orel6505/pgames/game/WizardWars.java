@@ -1,37 +1,30 @@
 package com.orel6505.pgames.game;
 
-import java.util.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.orel6505.pgames.action.Action;
-import com.orel6505.pgames.entity.Entity;
 import com.orel6505.pgames.entity.Position;
 import com.orel6505.pgames.player.Player;
 
-public class WizardWars extends Game {
+public class WizardWars extends BoardGame {
     private static final int MAX_PLAYERS = 10;
     private static final int BOARD_SIZE = 10;
     protected static final Action[] weapons = new Action[]{
-                new Action("Fireball"), //Rock
+                new Action("Fireball"),   //Rock
                 new Action("Magic ring"), //Paper
-                new Action("Sword") //Scissors
-    }; 
-
-    private Entity[][] board;
-    private Random rnd;
+                new Action("Sword")       //Scissors
+    };
 
     public WizardWars(List<Player> players){
-        super("Wizard Wars", MAX_PLAYERS);
-        this.rnd = new Random();
+        super("Wizard Wars", MAX_PLAYERS, BOARD_SIZE);
 
         this.actions = new Action[]{new Action("A"),
                                     new Action("S"),
                                     new Action("W"),
                                     new Action("D")};
         
-        this.board = new Entity[BOARD_SIZE][BOARD_SIZE];
         this.players = players;
     }
 
@@ -68,30 +61,6 @@ public class WizardWars extends Game {
             setEntitiesInRandomPositions(a, 2);
         }
         resetPlayersState();
-    }
-
-    private int getRandomPosition(){
-        return this.rnd.nextInt(0,10);
-    }
-
-    private boolean isPositionEmpty(int x, int y){
-        return this.board[x][y] == null;
-    }
-
-    private void setEntityInRandomPosition(Entity entity){
-        int xPosition;
-        int yPosition;
-        do {
-            xPosition = getRandomPosition();
-            yPosition = getRandomPosition();
-        } while (!isPositionEmpty(xPosition, yPosition)); 
-        this.board[xPosition][yPosition] = entity;
-    }
-
-    private void setEntitiesInRandomPositions(Entity entity, int count){
-        for(int i=0;i<count;i++){
-            setEntityInRandomPosition(entity);
-        }
     }
 
     // --------------------------- Players Functions ------------------------------------------//
@@ -254,10 +223,6 @@ public class WizardWars extends Game {
             case 'S': return x < BOARD_SIZE - 1;  // Down
             default: return false;
         }
-    }
-
-    private boolean isInBounds(int x, int y) {
-        return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
     }
     
     private boolean isBlocked(int x, int y) {
