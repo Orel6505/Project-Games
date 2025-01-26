@@ -34,5 +34,6 @@ public class FireBallSwordMagicRing extends RockPaperScissors {
             p1.setNotActive(); // p2 wins
         }
         //Tie
+        p1.setNotActive();
     }
 }
