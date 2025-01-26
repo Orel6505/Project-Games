@@ -20,7 +20,7 @@ public abstract class BoardGame extends Game {
     protected abstract void resetBoard();
 
     protected int getRandomPosition(){
-        return this.rnd.nextInt(0,10);
+        return this.rnd.nextInt(0, this.boardSize);
     }
 
     protected boolean isPositionEmpty(int x, int y){
