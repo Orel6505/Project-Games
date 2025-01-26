@@ -50,7 +50,8 @@ public class WizardWars extends BoardGame {
     }
 
     // --------------------------- Game Setup ------------------------------------------//
-    public void resetBoard(){
+    @Override
+    protected void resetBoard(){
         for(int i=0;i<BOARD_SIZE;i++){
             for(int j=0;j<BOARD_SIZE;j++){
                 this.board[i][j] = null;
@@ -64,6 +65,13 @@ public class WizardWars extends BoardGame {
     }
 
     // --------------------------- Players Functions ------------------------------------------//
+    private void resetPlayersState(){
+        for (Player p : this.players) {
+            p.resetActive();
+            p.setPosition(new Position(getRandomPosition(), getRandomPosition()));
+        }
+    }
+    
     private List<Player> getActivePlayers() {
         List<Player> activePlayers = new ArrayList<>();
         this.players.forEach(p -> {
@@ -97,13 +105,6 @@ public class WizardWars extends BoardGame {
         return this.players.stream()
                 .reduce((p1, p2) -> p1.isWinner(p2) ? p1 : p2)
                 .orElse(null);
-    }
-    
-    public void resetPlayersState(){
-        for (Player p : this.players) {
-            p.resetActive();
-            p.setPosition(new Position(getRandomPosition(), getRandomPosition()));
-        }
     }
 
     private void addWeapon(Player p, Action action){

@@ -17,7 +17,7 @@ public abstract class BoardGame extends Game {
         this.board = new Entity[boardSize][boardSize];
     }
 
-    public abstract void resetBoard();
+    protected abstract void resetBoard();
 
     protected int getRandomPosition(){
         return this.rnd.nextInt(0,10);
