@@ -4,13 +4,15 @@ import java.util.Stack;
 
 import com.orel6505.pgames.action.Action;
 import com.orel6505.pgames.action.Actionable;
-import com.orel6505.pgames.entity.Entity;
+import com.orel6505.pgames.entity.Position;
+import com.orel6505.pgames.entity.Positionable;
 
-public abstract class Player implements Actionable, Scorable, Entity {
+public abstract class Player implements Actionable, Scorable, Positionable {
     private String name;
     private Integer score;
     private Stack<Action> actions;
     private boolean isActive;
+    private Position position;
 
     protected Player(String name){
         this.name = name;
@@ -63,5 +65,21 @@ public abstract class Player implements Actionable, Scorable, Entity {
 
     public void setNotActive() {
         this.isActive = false;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+    
+    public Position getPosition() {
+        return this.position;
+    }
+
+    public int getXPosition() {
+        return this.position.getX();
+    }
+
+    public int getYPosition() {
+        return this.position.getY();
     }
 }

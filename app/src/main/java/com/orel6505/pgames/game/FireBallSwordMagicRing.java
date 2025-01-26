@@ -10,4 +10,25 @@ public class FireBallSwordMagicRing extends RockPaperScissors {
                                     new Action("Magic ring"), 
                                     new Action("Sword")};
     }
+
+    @Override
+    public void judge(Player p1, Player p2){
+        Action a1 = p1.popAction();
+        Action a2 = p2.popAction();
+        System.out.println(p1.getName() + " selected " + a1.getName());
+        System.out.println(p2.getName() + " selected " + a2.getName());
+        if (a1.equals(actions[1]) && a2.equals(actions[0])) {
+            p2.setNotActive(); // p1 wins
+        }
+        if (a1.equals(actions[2]) && a2.equals(actions[1])) {
+            p2.setNotActive(); // p1 wins
+        }
+        if (a1.equals(actions[0]) && a2.equals(actions[1])) {
+            p1.setNotActive(); // p2 wins
+        }
+        if (a1.equals(actions[1]) && a2.equals(actions[2])) {
+            p1.setNotActive(); // p2 wins
+        }
+        //Tie
+    }
 }

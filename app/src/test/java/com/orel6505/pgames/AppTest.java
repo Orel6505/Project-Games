@@ -4,8 +4,14 @@
 package com.orel6505.pgames;
 
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTimeout;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.orel6505.pgames.player.*;
 import com.orel6505.pgames.game.*;
@@ -19,6 +25,25 @@ class AppTest {
             Player p2 = new RandomPlayer("User B");
             Game game = new RockPaperScissors(p1, p2);
             game.play(10);
+            System.out.println(p1.getName()+" got "+p1.getScore()+ " and "
+                +p2.getName()+" got "+p2.getScore());
+        });
+    }
+
+    @Test
+    void wizardWarsTest() {
+        Assertions.assertDoesNotThrow(() -> {
+            //execute code that you expect not to throw Exceptions.
+            List<Player> players = new ArrayList<>();
+            Player p1 = new RandomPlayer("Orel");
+            Player p2 = new RandomPlayer("Goku");
+            players.add(p1);
+            players.add(p2);
+            Game game = new WizardWars(players);
+            assertTimeout(Duration.ofSeconds(2), () -> {
+                game.play(100);
+
+            });
             System.out.println(p1.getName()+" got "+p1.getScore()+ " and "
                 +p2.getName()+" got "+p2.getScore());
         });

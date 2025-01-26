@@ -21,7 +21,7 @@ public abstract class Game {
     public abstract void play(Integer turnCount);
     protected abstract void judge(Player p1, Player p2);
 
-    protected void addPlayer(Player p){
+    public void addPlayer(Player p){
         if(this.players.size() < maxPlayers){
             this.players.add(p);
         }
