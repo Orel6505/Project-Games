@@ -3,7 +3,7 @@ package com.orel6505.pgames.action;
 import com.orel6505.pgames.entity.Entity;
 
 public class Action implements Entity {
-    private String name;
+    protected String name;
 
     public Action(String name){
         this.name = name;
