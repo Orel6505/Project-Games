@@ -11,12 +11,15 @@ import com.orel6505.pgames.player.Player;
 public class WizardWars extends BoardGame {
     private static final int MAX_PLAYERS = 10;
     private static final int BOARD_SIZE = 10;
+
     public static final String TREE = "Tree";
     protected static final Action[] weapons = new Action[]{
                 new Action(FireBallSwordMagicRing.FIREBALL),   //Rock
                 new Action(FireBallSwordMagicRing.MAGIC_RING), //Paper
                 new Action(FireBallSwordMagicRing.SWORD)       //Scissors
     };
+
+    private List<Player> activePlayers;
 
     public WizardWars(List<Player> players){
         super("Wizard Wars", MAX_PLAYERS, BOARD_SIZE);
@@ -73,16 +76,7 @@ public class WizardWars extends BoardGame {
         for (Player p : this.players) {
             p.resetActive();
         }
-    }
-    
-    private List<Player> getActivePlayers() {
-        List<Player> activePlayers = new ArrayList<>();
-        this.players.forEach(p -> {
-            if (p.isActive()) {
-                activePlayers.add(p);
-            }
-        });
-        return activePlayers;
+        this.activePlayers = new ArrayList<>(players);
     }
 
     private List<Player> getPlayersAtRange(Player p, int range) {
@@ -127,6 +121,7 @@ public class WizardWars extends BoardGame {
     private void deactivatePlayer(Player p){
         p.setNotActive();
         this.board[p.getXPosition()][p.getYPosition()] = null;
+        this.activePlayers.remove(p);
     }
 
     // --------------------------- Game Functions------------------------------------------//
@@ -184,19 +179,26 @@ public class WizardWars extends BoardGame {
     }
 
     private void playRound() {
-        while (getActivePlayers().size() > 1) {
-            for (Player player : getActivePlayers()) {
+        List<Player> currentPlayers;
+        while (this.activePlayers.size() > 1) {
+            currentPlayers = new ArrayList<>(this.activePlayers);
+            
+            for (Player player : currentPlayers) {
+                if (!player.isActive()) continue;
+
                 char direction = selectValidDirection(player);
                 movePlayer(player, direction);
-
-                List<Player> opponent = getPlayersAtRange(player, 1);
-                for (Player opp : opponent) {
+    
+                List<Player> opponents = getPlayersAtRange(player, 1);
+                for (Player opp : opponents) {
                     encounter(player, opp);
+                    if (!player.isActive()) break; // Exit if player was deactivated
                 }
             }
-            if (getActivePlayers().size() == 1) {
-                System.out.println("round winner: " + getActivePlayers().get(0).getName());
-                getActivePlayers().get(0).increaseScore();
+            
+            if (this.activePlayers.size() == 1) {
+                System.out.println("round winner: " + this.activePlayers.get(0).getName());
+                this.activePlayers.get(0).increaseScore();
                 break;
             }
         }
