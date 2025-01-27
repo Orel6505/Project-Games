@@ -3,6 +3,7 @@ package com.orel6505.pgames.game;
 import java.util.Random;
 
 import com.orel6505.pgames.entity.Entity;
+import com.orel6505.pgames.entity.Position;
 
 public abstract class BoardGame extends Game {
     protected Entity[][] board;
@@ -19,8 +20,8 @@ public abstract class BoardGame extends Game {
 
     protected abstract void resetBoard();
 
-    protected int getRandomPosition(){
-        return this.rnd.nextInt(0, this.boardSize);
+    protected Position getRandomPosition(){
+        return new Position(this.rnd.nextInt(0, this.boardSize), this.rnd.nextInt(0, this.boardSize));
     }
 
     protected boolean isPositionEmpty(int x, int y){
@@ -28,13 +29,11 @@ public abstract class BoardGame extends Game {
     }
     
     protected void setEntityInRandomPosition(Entity entity){
-        int xPosition;
-        int yPosition;
+        Position position;
         do {
-            xPosition = getRandomPosition();
-            yPosition = getRandomPosition();
-        } while (!isPositionEmpty(xPosition, yPosition)); 
-        this.board[xPosition][yPosition] = entity;
+            position = getRandomPosition();
+        } while (!isPositionEmpty(position.getX(), position.getY())); 
+        this.board[position.getX()][position.getY()] = entity;
     }
 
     protected void setEntitiesInRandomPositions(Entity entity, int count){
@@ -43,7 +42,8 @@ public abstract class BoardGame extends Game {
         }
     }
 
-    protected boolean isInBounds(int x, int y) {
-        return x >= 0 && x < boardSize && y >= 0 && y < boardSize;
+    protected boolean isInBounds(Position position) {
+        return position.getX() >= 0 && position.getX() < boardSize 
+            && position.getY() >= 0 && position.getY() < boardSize;
     }
 }
