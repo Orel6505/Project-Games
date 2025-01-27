@@ -11,10 +11,11 @@ import com.orel6505.pgames.player.Player;
 public class WizardWars extends BoardGame {
     private static final int MAX_PLAYERS = 10;
     private static final int BOARD_SIZE = 10;
+    public static final String TREE = "Tree";
     protected static final Action[] weapons = new Action[]{
-                new Action("Fireball"),   //Rock
-                new Action("Magic ring"), //Paper
-                new Action("Sword")       //Scissors
+                new Action(FireBallSwordMagicRing.FIREBALL),   //Rock
+                new Action(FireBallSwordMagicRing.MAGIC_RING), //Paper
+                new Action(FireBallSwordMagicRing.SWORD)       //Scissors
     };
 
     public WizardWars(List<Player> players){
@@ -34,7 +35,7 @@ public class WizardWars extends BoardGame {
                 if(this.board[i][j] instanceof Player p){
                     System.out.print(p.getName().charAt(0));
                 } else if(this.board[i][j] instanceof Action a){
-                    if(a.getName().equals("Tree")){
+                    if(a.getName().equals(TREE)){
                         System.out.print("T");
                     } else{
                         System.out.print(a.getName().charAt(0));
@@ -57,18 +58,20 @@ public class WizardWars extends BoardGame {
                 this.board[i][j] = null;
             }
         }
-        setEntitiesInRandomPositions(new Action("Tree"), 3);
+        setEntitiesInRandomPositions(new Action(TREE), 3);
         for(Action a : weapons){
             setEntitiesInRandomPositions(a, 2);
         }
         resetPlayersState();
+        for(Player p : this.players){
+            setPlayerInPosition(p, getRandomPosition());
+        }
     }
 
     // --------------------------- Players Functions ------------------------------------------//
     private void resetPlayersState(){
         for (Player p : this.players) {
             p.resetActive();
-            p.setPosition(new Position(getRandomPosition(), getRandomPosition()));
         }
     }
     
@@ -113,6 +116,19 @@ public class WizardWars extends BoardGame {
         }
     }
 
+    private void setPlayerInPosition(Player p, Position pos){
+        if (p.getPosition() != null) {
+            this.board[p.getXPosition()][p.getYPosition()] = null;
+        }
+        p.setPosition(pos);
+        this.board[pos.getX()][pos.getY()] = p;
+    }
+
+    private void deactivatePlayer(Player p){
+        p.setNotActive();
+        this.board[p.getXPosition()][p.getYPosition()] = null;
+    }
+
     // --------------------------- Game Functions------------------------------------------//
     //definitely a pokemon reference
     private void encounter(Player p1, Player p2) {
@@ -120,24 +136,33 @@ public class WizardWars extends BoardGame {
         boolean p2Empty = p2.isActionsEmpty();
         
         if (p1Empty && p2Empty) {
-            //Do nothing
+            deactivatePlayer(p1);
         } else if (p1Empty) {
-            p1.setNotActive();
+            deactivatePlayer(p1);
         } else if (p2Empty) {
-            p2.setNotActive();
+            deactivatePlayer(p2);
         } else {
+            if (!p1.isActive()) {
+                return;
+            }
             judge(p1, p2);
         }
     }
 
     @Override
-    protected void judge(Player p1, Player p2){
+    protected void judge(Player p1, Player p2) {
         Game game = new FireBallSwordMagicRing(p1, p2);
         game.judge(p1, p2);
-        if(p1.isActive()){
-            this.board[p2.getXPosition()][p2.getYPosition()] = null;
-        } else {
-            this.board[p1.getXPosition()][p1.getYPosition()] = null;
+        
+        if (p1.isActive() && p2.isActive()) {
+            deactivatePlayer(p1);
+            return;
+        }
+        if (!p1.isActive()) {
+            deactivatePlayer(p1);
+        }
+        else { // (!p2.isActive())
+            deactivatePlayer(p2);
         }
     }
 
@@ -145,13 +170,17 @@ public class WizardWars extends BoardGame {
     public void play(Integer turnCount) {
         for (int i = 0; i < turnCount; i++) {
             resetBoard();
+            System.out.println("Turn " + (i+1));
             playRound();
         }
         Player won = whoWon();
+        int x = 0;
         for (Player p : this.players) {
             System.out.println("Player "+p.getName()+" got "+p.getScore());
+            x += p.getScore();
         }
         System.out.println("Game winner: " + won.getName());
+        System.out.println("Total points: "+x);
     }
 
     private void playRound() {
@@ -163,14 +192,12 @@ public class WizardWars extends BoardGame {
                 List<Player> opponent = getPlayersAtRange(player, 1);
                 for (Player opp : opponent) {
                     encounter(player, opp);
-                    if (!player.isActive() || !opp.isActive()) {
-                        break;
-                    }
                 }
             }
             if (getActivePlayers().size() == 1) {
                 System.out.println("round winner: " + getActivePlayers().get(0).getName());
                 getActivePlayers().get(0).increaseScore();
+                break;
             }
         }
     }
@@ -181,27 +208,19 @@ public class WizardWars extends BoardGame {
         
         int x = pos.getX();
         int y = pos.getY();
-        this.board[x][y] = null;
-
-        switch (direction) {
-            case 'W' -> x--;
-            case 'S' -> x++;
-            case 'A' -> y--;
-            case 'D' -> y++;
-            default -> { /* do nothing */ }
-        }
         
+        this.board[x][y] = null;
+    
+        applyDirToPosition(direction, pos);
+        
+        x = pos.getX();
+        y = pos.getY();
+    
         if(Arrays.asList(weapons).contains(this.board[x][y])){
             addWeapon(player, (Action)this.board[x][y]);
         }
-
-        if (isInBounds(x, y) && !isBlocked(x, y)) {
-            player.setPosition(new Position(x, y));
-            this.board[x][y] = player;
-        } else {
-            player.setPosition(pos);
-            this.board[pos.getX()][pos.getY()] = player;
-        }
+    
+        this.board[x][y] = player;
     }
 
     private char selectValidDirection(Player player) {
@@ -212,24 +231,34 @@ public class WizardWars extends BoardGame {
         return direction;
     }
 
+    private void applyDirToPosition(char direction, Position pos) {
+        int x = pos.getX();
+        int y = pos.getY();
+        
+        switch (direction) {
+            case 'W': pos.setX(x - 1); break;  // Up
+            case 'S': pos.setX(x + 1); break;  // Down
+            case 'A': pos.setY(y - 1); break;  // Left
+            case 'D': pos.setY(y + 1); break;  // Right
+            default: break; // Do nothing
+        }
+    }
+
     // --------------------------- Validations ------------------------------------------//
 
     private boolean isValidMove(Player player, char direction) {
-        int x = player.getXPosition();
-        int y = player.getYPosition();
-        switch (direction) {
-            case 'A': return y > 0;  // Left
-            case 'D': return y < BOARD_SIZE - 1;  // Right
-            case 'W': return x > 0;  // Up
-            case 'S': return x < BOARD_SIZE - 1;  // Down
-            default: return false;
-        }
+        Position pos = player.getPosition();
+        Position tempPos = new Position(pos.getX(), pos.getY());
+        
+        applyDirToPosition(direction, tempPos);
+        
+        return isInBounds(tempPos) && !isBlocked(tempPos);
     }
     
-    private boolean isBlocked(int x, int y) {
-       if(this.board[x][y] instanceof Action a){
-            return a.getName().equals("Tree");
-       }
-       return false;
+    private boolean isBlocked(Position position) {
+        if(this.board[position.getX()][position.getY()] instanceof Action a){
+            return a.getName().equals(TREE);
+        }
+        return false;
     }
 }
