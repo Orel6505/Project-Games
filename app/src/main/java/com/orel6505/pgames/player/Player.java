@@ -6,6 +6,7 @@ import com.orel6505.pgames.action.Action;
 import com.orel6505.pgames.action.Actionable;
 import com.orel6505.pgames.entity.Position;
 import com.orel6505.pgames.entity.Positionable;
+import com.orel6505.pgames.game.Game;
 
 public abstract class Player implements Actionable, Scorable, Positionable {
     private String name;
@@ -13,6 +14,7 @@ public abstract class Player implements Actionable, Scorable, Positionable {
     private Stack<Action> actions;
     private boolean isActive;
     private Position position;
+    protected Game currentGame;
 
     protected Player(String name){
         this.name = name;
@@ -81,5 +83,13 @@ public abstract class Player implements Actionable, Scorable, Positionable {
 
     public int getYPosition() {
         return this.position.getY();
+    }
+
+    public void setCurrentGame(Game game) {
+        this.currentGame = game;
+    }
+
+    public Game getCurrentGame() {
+        return currentGame;
     }
 }
