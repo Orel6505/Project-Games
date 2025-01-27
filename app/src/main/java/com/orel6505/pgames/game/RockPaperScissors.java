@@ -4,14 +4,17 @@ import com.orel6505.pgames.action.Action;
 import com.orel6505.pgames.player.Player;
 
 public class RockPaperScissors extends Game {
+    public static final String ROCK = "Rock";
+    public static final String PAPER = "Paper";
+    public static final String SCISSORS = "Scissors";
 
     public RockPaperScissors(Player p1, Player p2){
         super("Rock Paper Scissors", 2);
         this.players.add(p1);
         this.players.add(p2);
-        this.actions = new Action[]{new Action("Rock"), 
-                                    new Action("Paper"), 
-                                    new Action("Scissors")};
+        this.actions = new Action[]{new Action(ROCK), 
+                                    new Action(PAPER), 
+                                    new Action(SCISSORS)};
     }
 
     @Override
@@ -31,18 +34,15 @@ public class RockPaperScissors extends Game {
         Action a2 = p2.popAction();
         System.out.println(p1.getName() + " selected " + a1.getName());
         System.out.println(p2.getName() + " selected " + a2.getName());
-        if (a1.equals(actions[1]) && a2.equals(actions[0])) {
-            p1.increaseScore(); // p1 wins
+        
+        boolean p1Wins = (a1.getName().equals(actions[0].getName()) && a2.getName().equals(actions[2].getName())) ||
+                         (a1.getName().equals(actions[1].getName()) && a2.getName().equals(actions[0].getName())) ||
+                         (a1.getName().equals(actions[2].getName()) && a2.getName().equals(actions[1].getName()));
+                    
+        if (p1Wins) {
+            p1.increaseScore();
+        } else {
+            p2.increaseScore();
         }
-        if (a1.equals(actions[2]) && a2.equals(actions[1])) {
-            p1.increaseScore(); // p1 wins
-        }
-        if (a1.equals(actions[0]) && a2.equals(actions[1])) {
-            p2.increaseScore(); // p2 wins
-        }
-        if (a1.equals(actions[1]) && a2.equals(actions[2])) {
-            p2.increaseScore(); // p2 wins
-        }
-        //Tie
     }
 }
