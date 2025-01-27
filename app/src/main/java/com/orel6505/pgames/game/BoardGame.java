@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.orel6505.pgames.entity.Entity;
 import com.orel6505.pgames.entity.Position;
+import com.orel6505.pgames.entity.Positionable;
 
 public abstract class BoardGame extends Game {
     protected Entity[][] board;
@@ -28,15 +29,16 @@ public abstract class BoardGame extends Game {
         return this.board[x][y] == null;
     }
     
-    protected void setEntityInRandomPosition(Entity entity){
+    protected void setEntityInRandomPosition(Positionable entity){
         Position position;
         do {
             position = getRandomPosition();
-        } while (!isPositionEmpty(position.getX(), position.getY())); 
+        } while (!isPositionEmpty(position.getX(), position.getY()));
+        entity.setPosition(position);
         this.board[position.getX()][position.getY()] = entity;
     }
 
-    protected void setEntitiesInRandomPositions(Entity entity, int count){
+    protected void setEntitiesInRandomPositions(Positionable entity, int count){
         for(int i=0;i<count;i++){
             setEntityInRandomPosition(entity);
         }
