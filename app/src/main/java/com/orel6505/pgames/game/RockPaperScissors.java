@@ -18,6 +18,11 @@ public class RockPaperScissors extends Game {
     }
 
     @Override
+    public Action getBestMove(Player player) {
+        return null;
+    }
+
+    @Override
     public void play(Integer turnCount){
         Player p1 = this.players.get(0);
         Player p2 = this.players.get(1);

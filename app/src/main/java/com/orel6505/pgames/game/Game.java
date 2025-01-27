@@ -19,10 +19,12 @@ public abstract class Game {
     }
 
     public abstract void play(Integer turnCount);
+    public abstract Action getBestMove(Player player);
     protected abstract void judge(Player p1, Player p2);
 
     public void addPlayer(Player p){
         if(this.players.size() < maxPlayers){
+            p.setCurrentGame(this);
             this.players.add(p);
         }
     }

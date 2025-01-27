@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.orel6505.pgames.action.Action;
+import com.orel6505.pgames.action.GameItem;
 import com.orel6505.pgames.entity.Position;
 import com.orel6505.pgames.player.Player;
 
@@ -13,10 +14,10 @@ public class WizardWars extends BoardGame {
     private static final int BOARD_SIZE = 10;
 
     public static final String TREE = "Tree";
-    protected static final Action[] weapons = new Action[]{
-                new Action(FireBallSwordMagicRing.FIREBALL),   //Rock
-                new Action(FireBallSwordMagicRing.MAGIC_RING), //Paper
-                new Action(FireBallSwordMagicRing.SWORD)       //Scissors
+    protected static final GameItem[] weapons = new GameItem[]{
+                new GameItem(FireBallSwordMagicRing.FIREBALL),   //Rock
+                new GameItem(FireBallSwordMagicRing.MAGIC_RING), //Paper
+                new GameItem(FireBallSwordMagicRing.SWORD)       //Scissors
     };
 
     private List<Player> activePlayers;
@@ -61,8 +62,8 @@ public class WizardWars extends BoardGame {
                 this.board[i][j] = null;
             }
         }
-        setEntitiesInRandomPositions(new Action(TREE), 3);
-        for(Action a : weapons){
+        setEntitiesInRandomPositions(new GameItem(TREE), 3);
+        for(GameItem a : weapons){
             setEntitiesInRandomPositions(a, 2);
         }
         resetPlayersState();
@@ -94,6 +95,43 @@ public class WizardWars extends BoardGame {
         return playersInRange;
     }
 
+    private List<GameItem> getWeaponsAtRange(Player p, int range) {
+        List<GameItem> playersInRange = new ArrayList<>();
+        int x = p.getXPosition();
+        int y = p.getYPosition();
+        
+        for (int i = Math.max(0, x - range); i <= Math.min(BOARD_SIZE - 1, x + range); i++) {
+            for (int j = Math.max(0, y - range); j <= Math.min(BOARD_SIZE - 1, y + range); j++) {
+                if (board[i][j] instanceof GameItem item) {
+                    playersInRange.add(item);
+                }
+            }
+        }
+        return playersInRange;
+    }
+
+    public Action getBestMove(Player p) {
+        GameItem weaponInRange = getWeaponsAtRange(p, 1).get(0);
+        Player playerInRange = getPlayersAtRange(p, 1).get(0);
+        
+        Position playerPos = p.getPosition();
+        
+        if (weaponInRange.getPosition() != null) {
+            return getDirectionToTarget(playerPos, weaponInRange.getPosition());
+        } else if (playerInRange.getPosition() != null) {
+            return getDirectionToTarget(playerPos, playerInRange.getPosition());
+        }
+        return null;
+    }
+    
+    private Action getDirectionToTarget(Position from, Position to) {
+        if (to.getX() > from.getX()) return new Action("D");
+        if (to.getX() < from.getX()) return new Action("A");
+        if (to.getY() > from.getY()) return new Action("S");
+        if (to.getY() < from.getY()) return new Action("W");
+        return null;
+    }
+
     public Player whoWon() {
         if (this.players.isEmpty()) {
             return null;
@@ -104,9 +142,10 @@ public class WizardWars extends BoardGame {
                 .orElse(null);
     }
 
-    private void addWeapon(Player p, Action action){
+    private void addWeapon(Player p, GameItem action){
         if(action != null){
             p.pushAction(action);
+            action.setPosition(null);
         }
     }
 
@@ -219,7 +258,7 @@ public class WizardWars extends BoardGame {
         y = pos.getY();
     
         if(Arrays.asList(weapons).contains(this.board[x][y])){
-            addWeapon(player, (Action)this.board[x][y]);
+            addWeapon(player, (GameItem)this.board[x][y]);
         }
     
         this.board[x][y] = player;
