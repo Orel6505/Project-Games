@@ -11,19 +11,18 @@ public class RandomPlayer extends Player {
         super(name);
         this.rnd = new Random();
     }
-    
-    @Override
-    public Action selectActions(Action[] actions) {
-        return actions[getRandomNumber(0, actions.length)];
-    }
-
-    private int getRandomNumber(int min, int max) {
-        return this.rnd.nextInt(min,max);
-    }
 
     @Override
     public Action selectAction(Action[] actions) {
         return actions[getRandomNumber(0, actions.length)];
     }
+    
+    @Override
+    public Action selectActions(Action[] actions) {
+        return selectAction(actions);
+    }
 
+    private int getRandomNumber(int min, int max) {
+        return this.rnd.nextInt(min,max);
+    }
 }
