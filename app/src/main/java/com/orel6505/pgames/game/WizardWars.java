@@ -31,6 +31,9 @@ public class WizardWars extends BoardGame {
                                     new Action("D")};
         
         this.players = players;
+        for (Player p : this.players) {
+            p.setCurrentGame(this);
+        }
     }
 
     public void printBoard(){
@@ -102,7 +105,7 @@ public class WizardWars extends BoardGame {
         
         for (int i = Math.max(0, x - range); i <= Math.min(BOARD_SIZE - 1, x + range); i++) {
             for (int j = Math.max(0, y - range); j <= Math.min(BOARD_SIZE - 1, y + range); j++) {
-                if (board[i][j] instanceof GameItem item) {
+                if (board[i][j] instanceof GameItem item && item.getPosition() != null && item.getName() != TREE) {
                     playersInRange.add(item);
                 }
             }
@@ -143,8 +146,9 @@ public class WizardWars extends BoardGame {
     }
 
     private void addWeapon(Player p, GameItem action){
-        if(action != null){
+        if(action != null && action.getPosition() != null){
             p.pushAction(action);
+            this.board[action.getXPosition()][action.getYPosition()] = null;
             action.setPosition(null);
         }
     }
