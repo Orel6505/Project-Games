@@ -31,9 +31,4 @@ public class HumanPlayer extends Player {
         }
         return actions[chosenAction];
     }
-
-    @Override
-    public Action selectActions(Action[] actions) {
-        return selectAction(actions);
-    }
 }

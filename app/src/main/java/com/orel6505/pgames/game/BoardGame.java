@@ -28,14 +28,21 @@ public abstract class BoardGame extends Game {
     protected boolean isPositionEmpty(int x, int y){
         return this.board[x][y] == null;
     }
+
+    protected void setEntityInPosition(Positionable p, Position pos){
+        if (p.getPosition() != null) {
+            this.board[p.getXPosition()][p.getYPosition()] = null;
+        }
+        p.setPosition(pos);
+        this.board[pos.getX()][pos.getY()] = p;
+    }
     
     protected void setEntityInRandomPosition(Positionable entity){
         Position position;
         do {
             position = getRandomPosition();
         } while (!isPositionEmpty(position.getX(), position.getY()));
-        entity.setPosition(position);
-        this.board[position.getX()][position.getY()] = entity;
+        setEntityInPosition(entity, position);
     }
 
     protected void setEntitiesInRandomPositions(Positionable entity, int count){

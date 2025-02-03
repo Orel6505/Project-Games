@@ -2,94 +2,88 @@ package com.orel6505.pgames.player;
 
 import java.util.Stack;
 
-import com.orel6505.pgames.action.Action;
 import com.orel6505.pgames.action.Actionable;
 import com.orel6505.pgames.entity.Position;
 import com.orel6505.pgames.entity.Positionable;
-import com.orel6505.pgames.game.Game;
+import com.orel6505.pgames.item.Item;
 
 public abstract class Player implements Actionable, Scorable, Positionable {
     private String name;
     private Integer score;
-    private Stack<Action> actions;
-    private boolean isActive;
+    private Stack<Item> inventory;
+    private boolean isActiveInRound;
     private Position position;
-    protected Game currentGame;
 
     protected Player(String name){
         this.name = name;
         this.score = 0;
-        this.actions = new Stack<>();
-    }
-
-    public boolean isWinner(Scorable p){
-        return (this.score > p.getScore());
-    }
-
-    public void increaseScore(){
-        updateScore(1);
-    }
-
-    public void updateScore(Integer score){
-        this.score = this.score + score;
-    }
-
-    public Integer getScore(){
-        return this.score;
+        this.inventory = new Stack<>();
     }
 
     public String getName(){
         return this.name;
     }
 
-    public boolean isActionsEmpty() {
-        return this.actions.isEmpty();
+    // Score related
+    public void increaseScore(){
+        updateScore(1);
     }
 
-    public Action popAction() {
-        if (this.actions.isEmpty()) {
+    public void updateScore(Integer score){
+        this.score = score;
+    }
+
+    public Integer getScore(){
+        return this.score;
+    }
+
+    // Inventory related
+    public boolean isInventoryEmpty() {
+        return this.inventory.isEmpty();
+    }
+
+    public Item popItem() {
+        if (this.inventory.isEmpty()) {
             return null;
         }
-        return this.actions.pop();
+        return this.inventory.pop();
     }
 
-    public void pushAction(Action action) {
-        this.actions.push(action);
+    public void pushItem(Item item) {
+        this.inventory.push(item);
     }
 
-    public boolean isActive() {
-        return this.isActive;
+    // Activate the player for the round
+    public boolean isActiveInRound() {
+        return this.isActiveInRound;
     }
 
-    public void resetActive() {
-        this.isActive = true;
+    public void resetActiveInRound() {
+        this.isActiveInRound = true;
     }
 
-    public void setNotActive() {
-        this.isActive = false;
+    public void deactivateForRound() {
+        this.isActiveInRound = false;
     }
-
+    
+    // positionable
+    @Override
     public void setPosition(Position position) {
         this.position = position;
     }
-    
+
+    @Override
     public Position getPosition() {
         return this.position;
     }
 
+    @Override
     public int getXPosition() {
         return this.position.getX();
     }
 
+    @Override
     public int getYPosition() {
         return this.position.getY();
-    }
-
-    public void setCurrentGame(Game game) {
-        this.currentGame = game;
-    }
-
-    public Game getCurrentGame() {
-        return currentGame;
     }
 }

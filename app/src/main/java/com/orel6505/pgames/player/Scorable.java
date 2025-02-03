@@ -1,8 +1,6 @@
 package com.orel6505.pgames.player;
 
 public interface Scorable {
-    boolean isWinner(Scorable other);
-    
     //Get the score of the player
     Integer getScore();
 

@@ -25,9 +25,4 @@ public class ScoutPlayer extends Player {
         lastAction = currentAction;
         return currentAction;
     }
-    
-    @Override
-    public Action selectActions(Action[] actions) {
-        return selectAction(actions);
-    }
 }

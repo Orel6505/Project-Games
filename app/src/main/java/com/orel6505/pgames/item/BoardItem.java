@@ -1,24 +1,23 @@
-package com.orel6505.pgames.action;
+package com.orel6505.pgames.item;
 
 import com.orel6505.pgames.entity.Position;
 import com.orel6505.pgames.entity.Positionable;
 
-public class GameItem extends Action implements Positionable {
+public class BoardItem extends Item implements Positionable {
     private Position position;
 
-    public GameItem(String name) {
+    public BoardItem(String name) {
         super(name);
+        this.position = null;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof GameItem)) return false;
+        if (!(obj instanceof BoardItem)) return false;
         
-        GameItem other = (GameItem) obj;
-        return super.equals(obj) && 
-               (position == null ? other.position == null 
-                               : position.equals(other.position));
+        BoardItem other = (BoardItem) obj;
+        return super.equals(obj) && (position != null ? position.equals(other.position) : other.position == null);
     }
 
     @Override

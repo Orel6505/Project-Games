@@ -1,5 +1,7 @@
 package com.orel6505.pgames.entity;
 
+import com.orel6505.pgames.action.Action;
+
 public class Position implements Entity {
     private int x;
     private int y;
@@ -24,6 +26,8 @@ public class Position implements Entity {
     public void setY(int y) {
         this.y = y;
     }
+
+    
 
     @Override
     public boolean equals(Object obj) {

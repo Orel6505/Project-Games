@@ -10,11 +10,6 @@ public class SmartRandomPlayer extends RandomPlayer{
 
     @Override
     public Action selectAction(Action[] actions) {
-        Action bestMove = currentGame.getBestMove(this);
-        if (bestMove != null) {
-            return bestMove;
-        }
-        return super.selectAction(actions);
+        return actions[0]; //Temp for now
     }
-    
 }

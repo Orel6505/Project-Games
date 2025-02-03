@@ -1,10 +1,9 @@
-package com.orel6505.pgames.action;
+package com.orel6505.pgames.item;
 
-
-public class Action {
+public class Item {
     protected String name;
 
-    public Action(String name){
+    public Item(String name) {
         this.name = name;
     }
 
@@ -20,7 +19,7 @@ public class Action {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        Action other = (Action) obj;
+        Item other = (Item) obj;
         return name != null ? name.equals(other.name) : other.name == null;
     }
 
