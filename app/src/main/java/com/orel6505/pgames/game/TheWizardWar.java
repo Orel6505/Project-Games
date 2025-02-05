@@ -6,6 +6,7 @@ import java.util.List;
 import com.orel6505.pgames.action.Action;
 import com.orel6505.pgames.entity.Obstacle;
 import com.orel6505.pgames.entity.Position;
+import com.orel6505.pgames.entity.Positionable;
 import com.orel6505.pgames.item.BoardItem;
 import com.orel6505.pgames.item.Item;
 import com.orel6505.pgames.player.Player;
@@ -19,6 +20,7 @@ public class TheWizardWar extends BoardGame{
     public static final String MAGIC_RING = "Magic ring";
     public static final String SWORD = "Sword";
 
+    List<Player> activePlayers;
     public TheWizardWar(){
         super("Wizard Wars", MAX_PLAYERS, BOARD_SIZE);
 
@@ -28,6 +30,8 @@ public class TheWizardWar extends BoardGame{
             new Action("W"),
             new Action("D")
         };
+
+        this.activePlayers = players;
     }
 
     public void printBoard(){
@@ -35,7 +39,7 @@ public class TheWizardWar extends BoardGame{
             for(int j=0;j<BOARD_SIZE;j++){
                 if(this.board[i][j] instanceof Player p){
                     System.out.print(p.getName().charAt(0));
-                } else if(this.board[i][j] instanceof Action a){
+                } else if(this.board[i][j] instanceof Positionable a){
                     if(a.getName().equals(TREE)){
                         System.out.print("T");
                     } else{
@@ -78,8 +82,8 @@ public class TheWizardWar extends BoardGame{
     }
 
     private void resetPlayersState(){
+        this.activePlayers = new ArrayList<>(this.players);
         for (Player p : this.players) {
-            p.resetActiveInRound();
             p.setPosition(null);
         }
     }
@@ -90,6 +94,14 @@ public class TheWizardWar extends BoardGame{
             this.board[item.getXPosition()][item.getYPosition()] = null;
             item.setPosition(null);
         }
+    }
+
+    private Action playerChooseAction(Player player) {
+        Action direction;
+        do {
+            direction = player.selectAction(actions);
+        } while (!isValidMove(player, direction));
+        return direction;
     }
 
     @Override
@@ -181,25 +193,160 @@ public class TheWizardWar extends BoardGame{
     }
 
     private void deactivatePlayer(Player p){
-        p.deactivateForRound();
+        removePlayerInRound(p);
         this.board[p.getXPosition()][p.getYPosition()] = null;
+    }
+
+    private Player encounter(Player p1, Player p2) {
+        
+        if (!isActiveInRound(p1)) {
+            return p2;
+        }
+        if (!isActiveInRound(p2)) {
+            return p1;
+        }
+        judge(p1, p2);
+        if (!isActiveInRound(p1)) {
+            deactivatePlayer(p1);
+            return p2;
+        }
+        else {
+            deactivatePlayer(p2);
+            return p1;
+        }
+}
+
+    private boolean isActiveInRound(Player p) {
+        return this.activePlayers.contains(p);
+    }
+
+    private void removePlayerInRound(Player p) {
+        this.activePlayers.remove(p);
     }
 
     @Override
     public void play(Integer turnCount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'play'");
+        for (int i = 0; i < turnCount; i++) {
+            resetBoard();
+            System.out.println("Turn " + (i+1));
+            turn();
+        }
+        Player won = getWinner();
+        int x = 0;
+        for (Player p : this.players) {
+            System.out.println("Player "+p.getName()+" got "+p.getScore());
+            x += p.getScore();
+        }
+        System.out.println("Game winner: " + won.getName());
+        System.out.println("Total points: "+x);
+    }
+
+    private void movePlayer(Player player, Action direction) {
+        Position currentPos = player.getPosition();
+        if (currentPos == null) {
+            return;
+        }
+        
+        // Clear the player's current position.
+        int oldX = currentPos.getX();
+        int oldY = currentPos.getY();
+        this.board[oldX][oldY] = null;
+        
+        // Calculate the new position.
+        Position newPos = applyDirection(currentPos, direction);
+        int newX = newPos.getX();
+        int newY = newPos.getY();
+        
+        // Check for an object at the destination.
+        Object possibleInteraction = this.board[newX][newY];
+        if (possibleInteraction instanceof BoardItem item) {
+                    addWeapon(player, boardItem);
+                    // Place the player after collecting the item.
+                    this.board[newX][newY] = player;
+        } else if (possibleInteraction instanceof Player otherPlayer) {
+            if (newX == otherPlayer.getXPosition() && newY == otherPlayer.getYPosition()) {
+                encounter(player, otherPlayer);
+                if (isActiveInRound(player)) {
+                    this.board[newX][newY] = player;
+                } else if (isActiveInRound(otherPlayer)) {
+                    this.board[newX][newY] = otherPlayer;
+                } else {
+                    this.board[newX][newY] = null;
+                }
+            }
+        } else {
+            this.board[newX][newY] = player;
+        }
     }
 
     @Override
     protected void turn() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'turn'");
+        while (activePlayers.size() > 1) {
+            printBoard();
+            
+            List<Player> currentTurnPlayers = new ArrayList<>(activePlayers);
+            for (Player player : currentTurnPlayers) {
+                if (!isActiveInRound(player)) {
+                    continue;
+                }
+                
+                // Let the player choose and execute a move.
+                Action direction = playerChooseAction(player);
+                movePlayer(player, direction);
+            }
+        }
+        
+        if (activePlayers.size() == 1) {
+            declareRoundWinner(activePlayers.get(0));
+            activePlayers.get(0).increaseScore();
+        }
     }
 
     @Override
     protected void judge(Player p1, Player p2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'judge'");
+        // Both players must have at least one item.
+        Item a1 = p1.popItem();
+        Item a2 = p2.popItem();
+        
+        if (a1 == null){
+            this.activePlayers.remove(p1);
+            System.out.println(p2.getName() + " wins the encounter!");
+            return;
+        } 
+        if (a2 == null) {
+            this.activePlayers.remove(p2);
+            System.out.println(p1.getName() + " wins the encounter!");
+            return;
+        }
+
+        // Log choices.
+        System.out.println(p1.getName() + " selected " + a1.getName());
+        System.out.println(p2.getName() + " selected " + a2.getName());
+        System.out.println();
+        
+        // If the items are equal, treat it as a tie:
+        if (a1.getName().equals(a2.getName())) {
+            System.out.println("Tie! " + p1.getName() + " deactivates.");
+            removePlayerInRound(p1);
+            // Optionally, you might push one of the items back.
+            p2.pushItem(a1);
+            return;
+        }
+        
+        // Determine win based on game rules.
+        boolean p1Wins = (a1.getName().equals(SWORD) && a2.getName().equals(FIREBALL)) ||
+                        (a1.getName().equals(FIREBALL) && a2.getName().equals(MAGIC_RING)) ||
+                        (a1.getName().equals(MAGIC_RING) && a2.getName().equals(SWORD));
+        
+        if (p1Wins) {
+            System.out.println(p1.getName() + " wins the encounter!");
+            removePlayerInRound(p2);
+            // Optionally, transfer p2's item to p1.
+            p1.pushItem(a2);
+        } else {
+            System.out.println(p2.getName() + " wins the encounter!");
+            removePlayerInRound(p1);
+            p2.pushItem(a1);
+        }
     }
 }

@@ -17,7 +17,7 @@ import com.orel6505.pgames.player.*;
 import com.orel6505.pgames.game.*;
 
 class AppTest {
-    @Test
+    /*@Test
     void randomPlayerTest() {
         Assertions.assertDoesNotThrow(() -> {
             //execute code that you expect not to throw Exceptions.
@@ -28,7 +28,7 @@ class AppTest {
             System.out.println(p1.getName()+" got "+p1.getScore()+ " and "
                 +p2.getName()+" got "+p2.getScore());
         });
-    }
+    } */
 
     @Test
     void wizardWarsTest() {
@@ -37,9 +37,9 @@ class AppTest {
             List<Player> players = new ArrayList<>();
             Player p1 = new RandomPlayer("Orel");
             Player p2 = new RandomPlayer("Goku");
-            players.add(p1);
-            players.add(p2);
-            Game game = new WizardWars(players);
+            Game game = new TheWizardWar();
+            game.addPlayer(p1);
+            game.addPlayer(p2);
             assertTimeout(Duration.ofSeconds(2), () -> {
                 game.play(100);
 

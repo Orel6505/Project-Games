@@ -42,6 +42,11 @@ public abstract class Game implements GamePlayer {
                 .orElse(null);
     }
 
+    protected void declareRoundWinner(Player winner) {
+        System.out.println("round winner: " + winner.getName());
+        winner.increaseScore();
+    }
+
     public List<Player> getPlayers() {
         return this.players;
     }

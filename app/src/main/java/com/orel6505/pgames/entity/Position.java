@@ -1,8 +1,6 @@
 package com.orel6505.pgames.entity;
 
-import com.orel6505.pgames.action.Action;
-
-public class Position implements Entity {
+public class Position {
     private int x;
     private int y;
 

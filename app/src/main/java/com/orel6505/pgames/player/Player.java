@@ -11,7 +11,6 @@ public abstract class Player implements Actionable, Scorable, Positionable {
     private String name;
     private Integer score;
     private Stack<Item> inventory;
-    private boolean isActiveInRound;
     private Position position;
 
     protected Player(String name){
@@ -51,19 +50,6 @@ public abstract class Player implements Actionable, Scorable, Positionable {
 
     public void pushItem(Item item) {
         this.inventory.push(item);
-    }
-
-    // Activate the player for the round
-    public boolean isActiveInRound() {
-        return this.isActiveInRound;
-    }
-
-    public void resetActiveInRound() {
-        this.isActiveInRound = true;
-    }
-
-    public void deactivateForRound() {
-        this.isActiveInRound = false;
     }
     
     // positionable

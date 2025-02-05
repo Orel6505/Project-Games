@@ -5,4 +5,5 @@ public interface Positionable extends Entity{
     void setPosition(Position position);
     public int getXPosition();
     public int getYPosition();
+    public String getName();
 }
